@@ -1,0 +1,53 @@
+zeebe:
+  client:
+    broker:
+      gateway-address: 192.168.51.12:26500
+    security:
+      plaintext: true
+
+call-center:
+  realm: Hayot
+  auth-server-url: http://192.168.23.225:8080/auth
+  resource: call-centre
+  credentials:
+    secret: Jlx5e0oB2aoELd3oik9g8hsiMr0mD1ZB
+
+
+keycloak:
+  realm: Hayot
+  auth-server-url: http://192.168.23.225:8080/auth
+  resource: crm
+
+
+spring:
+  security:
+    oauth2:
+      client:
+        registration:
+          keycloak:
+            client-id: crm
+            authorization-grant-type: authorization_code
+            scope:
+              - openid
+        provider:
+          keycloak:
+            issuer-uri: http://192.168.23.225:8080/auth/realms/Hayot
+            user-name-attribute: preferred_username
+  datasource:
+    url: jdbc:postgresql://192.168.16.10:4432/hayot
+    driverClassName: org.postgresql.Driver
+    username: camunda
+    password: WkLObd2TWrf923UzcB
+    hikari:
+      schema: camunda
+  liquibase:
+    change-log: classpath:db/changelog/db.changelog-master.xml
+  main:
+    allow-bean-definition-overriding: true
+server:
+  port: 8091
+
+
+bpm:
+  client:
+    nibbd: HB_Nibbd

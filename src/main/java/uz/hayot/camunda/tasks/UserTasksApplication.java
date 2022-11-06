@@ -1,0 +1,26 @@
+package uz.hayot.camunda.tasks;
+
+import com.vaadin.flow.component.page.AppShellConfigurator;
+import com.vaadin.flow.component.page.Push;
+import com.vaadin.flow.server.PWA;
+import io.camunda.zeebe.spring.client.EnableZeebeClient;
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.web.servlet.support.SpringBootServletInitializer;
+import org.springframework.data.jdbc.repository.config.EnableJdbcAuditing;
+
+@SpringBootApplication
+@EnableZeebeClient
+@Push
+@PWA(
+		name = "Hayot Bank CRM",
+		shortName = "CRM"
+)
+@EnableJdbcAuditing
+public class UserTasksApplication extends SpringBootServletInitializer implements AppShellConfigurator {
+
+	public static void main(String[] args) {
+		SpringApplication.run(UserTasksApplication.class, args);
+	}
+
+}

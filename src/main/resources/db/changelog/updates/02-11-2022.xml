@@ -1,0 +1,162 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
+        xmlns:pro="http://www.liquibase.org/xml/ns/pro"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.3.xsd
+		http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd
+		http://www.liquibase.org/xml/ns/pro http://www.liquibase.org/xml/ns/pro/liquibase-pro-latest.xsd">
+
+    <changeSet id="202211031312" author="Gasan Djalilov">
+        <createTable tableName="DOC_TYPE">
+            <column name="DOC_ID" autoIncrement="true" type="BIGINT">
+                <constraints primaryKey="true" primaryKeyName="DOC_TYPE_ID"/>
+            </column>
+            <column name="NAME_RU" type="varchar(250)">
+                <constraints unique="true" uniqueConstraintName="DOC_TYPE_NAME_RU_UNQ"/>
+            </column>
+            <column name="NAME_EN" type="varchar(250)">
+                <constraints unique="true" uniqueConstraintName="DOC_TYPE_NAME_EN_UNQ"/>
+            </column>
+            <column name="NAME_UZ" type="varchar(250)">
+                <constraints unique="true" uniqueConstraintName="DOC_TYPE_NAME_UZ_UNQ"/>
+            </column>
+        </createTable>
+        <createTable tableName="CLIENT_TYPE">
+            <column name="CLIENT_ID" autoIncrement="true" type="BIGINT">
+                <constraints primaryKey="true" primaryKeyName="CLIENT_TYPE_ID"/>
+            </column>
+            <column name="NAME_RU" type="varchar(250)">
+                <constraints unique="true" uniqueConstraintName="CLIENT_TYPE_NAME_RU_UNQ"/>
+            </column>
+            <column name="NAME_EN" type="varchar(250)">
+                <constraints unique="true" uniqueConstraintName="CLIENT_TYPE_NAME_EN_UNQ"/>
+            </column>
+            <column name="NAME_UZ" type="varchar(250)">
+                <constraints unique="true" uniqueConstraintName="CLIENT_TYPE_NAME_UZ_UNQ"/>
+            </column>
+        </createTable>
+        <createTable  tableName="SEX_TYPE">
+            <column name="SEX_ID" type="BIGINT">
+                <constraints primaryKey="true" primaryKeyName="SEX_TYPE_ID"/>
+            </column>
+            <column name="NAME_RU" type="varchar(250)">
+                <constraints unique="true" uniqueConstraintName="SEX_TYPE_NAME_RU_UNQ"/>
+            </column>
+            <column name="NAME_EN" type="varchar(250)">
+                <constraints unique="true" uniqueConstraintName="SEX_TYPE_NAME_EN_UNQ"/>
+            </column>
+            <column name="NAME_UZ" type="varchar(250)">
+                <constraints unique="true" uniqueConstraintName="SEX_TYPE_NAME_UZ_UNQ"/>
+            </column>
+        </createTable>
+        <createTable  tableName="COUNTRY">
+            <column name="COUNTRY_ID"  type="varchar(10)">
+                <constraints primaryKey="true" primaryKeyName="COUNTRY_ID"/>
+            </column>
+            <column name="NAME_RU" type="varchar(250)">
+                <constraints unique="true" uniqueConstraintName="COUNTRY_NAME_RU_UNQ"/>
+            </column>
+            <column name="NAME_EN" type="varchar(250)">
+                <constraints unique="true" uniqueConstraintName="COUNTRY_NAME_EN_UNQ"/>
+            </column>
+            <column name="NAME_UZ" type="varchar(250)">
+                <constraints unique="true" uniqueConstraintName="COUNTRY_NAME_UZ_UNQ"/>
+            </column>
+        </createTable>
+        <createTable  tableName="DISTRICT">
+            <column name="DISTRICT_ID" type="varchar(10)">
+                <constraints primaryKey="true" primaryKeyName="DISTRICT_ID"/>
+            </column>
+            <column name="NAME_RU" type="varchar(250)">
+                <constraints unique="true" uniqueConstraintName="DISTRICT_NAME_RU_UNQ"/>
+            </column>
+            <column name="NAME_EN" type="varchar(250)">
+                <constraints unique="true" uniqueConstraintName="DISTRICT_NAME_EN_UNQ"/>
+            </column>
+            <column name="NAME_UZ" type="varchar(250)">
+                <constraints unique="true" uniqueConstraintName="DISTRICT_NAME_UZ_UNQ"/>
+            </column>
+        </createTable>
+        <createTable  tableName="REGION">
+            <column name="REGION_ID"  type="varchar(10)">
+                <constraints primaryKey="true" primaryKeyName="REGION_ID"/>
+            </column>
+            <column name="NAME_RU" type="varchar(250)">
+                <constraints unique="true" uniqueConstraintName="REGION_NAME_RU_UNQ"/>
+            </column>
+            <column name="NAME_EN" type="varchar(250)">
+                <constraints unique="true" uniqueConstraintName="REGION_NAME_EN_UNQ"/>
+            </column>
+            <column name="NAME_UZ" type="varchar(250)">
+                <constraints unique="true" uniqueConstraintName="REGION_NAME_UZ_UNQ"/>
+            </column>
+        </createTable>
+
+        <createTable tableName="USER_DATA">
+            <column name="USER_ID" type="UUID">
+                <constraints primaryKey="true" primaryKeyName="USER_ID"/>
+            </column>
+            <column name="FIRSTNAME" type="varchar(50)">
+            </column>
+            <column name="LASTNAME" type="varchar(50)">
+            </column>
+            <column name="PATRONYMIC" type="varchar(50)">
+            </column>
+            <column name="DOC_ID" type="BIGINT">
+                <constraints foreignKeyName="DOC_ID"
+                             referencedTableName="DOC_TYPE"
+                             referencedColumnNames="DOC_ID"
+                />
+            </column>
+            <column name="DOC_SERIES" type="varchar(8)">
+            </column>
+            <column name="DOC_NUMBER" type="NUMBER(30)">
+            </column>
+            <column name="MAIN_PHONE_NUMBER" type="NUMBER(15)">
+            </column>
+            <column name="ADDITIONAL_PHONE_NUMBER" type="NUMBER(15)">
+            </column>
+            <column name="BIRTH_DATE" type="DATE">
+            </column>
+            <column name="INN" type="NUMBER()"/>
+            <column name="SEX_ID" type="BIGINT">
+                <constraints foreignKeyName="SEX_ID"
+                             referencedTableName="SEX_TYPE"
+                             referencedColumnNames="SEX_ID"
+                />
+            </column>
+            <column name="CLIENT_ID" type="BIGINT">
+                <constraints foreignKeyName="CLIENT_ID"
+                             referencedTableName="CLIENT_TYPE"
+                             referencedColumnNames="CLIENT_ID"
+                />
+            </column>
+            <column name="ADDRESS" type="VARCHAR(250)"/>
+            <column name="REGION_ID" type="varchar(10)">
+                <constraints foreignKeyName="REGION_ID"
+                             referencedTableName="REGION"
+                             referencedColumnNames="REGION_ID"
+                />
+            </column>
+            <column name="COUNTRY_ID" type="varchar(10)">
+                <constraints foreignKeyName="COUNTRY_ID"
+                             referencedTableName="COUNTRY"
+                             referencedColumnNames="COUNTRY_ID"
+                />
+            </column>
+            <column name="DISTRICT_ID" type="varchar(10)">
+                <constraints foreignKeyName="DISTRICT_ID"
+                             referencedTableName="DISTRICT"
+                             referencedColumnNames="DISTRICT_ID"
+                />
+            </column>
+            <column name="DATE_ISSUE" type="DATE"/>
+            <column name="DATE_EXPIRY" type="DATE"/>
+            <column name="NATIONALITY" type="VARCHAR(250)"/>
+
+        </createTable>
+    </changeSet>
+</databaseChangeLog>

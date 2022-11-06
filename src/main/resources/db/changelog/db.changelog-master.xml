@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
+        xmlns:pro="http://www.liquibase.org/xml/ns/pro"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.3.xsd
+		http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd
+		http://www.liquibase.org/xml/ns/pro http://www.liquibase.org/xml/ns/pro/liquibase-pro-latest.xsd">
+
+    <includeAll path="db/changelog/updates"/>
+    <changeSet id="202210311812" author="Gasan Djalilov">
+        <sql>CREATE TYPE state AS ENUM ('UNDEFINED','ENABLED','DISABLED','RESERVED','UNUSABLE')</sql>
+        <createTable tableName="BPMN_PROCESS_TYPE">
+            <column name="TYPE_ID" type="NUMBER">
+                <constraints primaryKey="true" primaryKeyName="TYPE_ID" />
+            </column>
+            <column name="NAME_RU" type="varchar(250)">
+                <constraints unique="true" uniqueConstraintName="TYPE_NAME_RU_UNQ" />
+            </column>
+            <column name="NAME_EN" type="varchar(250)">
+                <constraints unique="true" uniqueConstraintName="TYPE_NAME_EN_UNQ" />
+            </column>
+            <column name="NAME_UZ" type="varchar(250)">
+                <constraints unique="true" uniqueConstraintName="TYPE_NAME_UZ_UNQ" />
+            </column>
+        </createTable>
+        <createTable tableName="BPMN_PROCESS_CATEGORY">
+            <column name="CATEGORY_ID" type="NUMBER">
+                <constraints primaryKey="true" primaryKeyName="CATEGORY_ID" />
+            </column>
+            <column name="NAME_RU" type="varchar(250)">
+                <constraints unique="true" uniqueConstraintName="CATEGORY_NAME_RU_UNQ" />
+            </column>
+            <column name="NAME_EN" type="varchar(250)">
+                <constraints unique="true" uniqueConstraintName="CATEGORY_NAME_EN_UNQ" />
+            </column>
+            <column name="NAME_UZ" type="varchar(250)">
+                <constraints unique="true" uniqueConstraintName="CATEGORY_NAME_UZ_UNQ" />
+            </column>
+            <column name="TYPE_ID" type="NUMBER">
+                <constraints foreignKeyName="TYPE_ID"
+                             referencedTableName="BPMN_PROCESS_TYPE"
+                             referencedColumnNames="TYPE_ID"
+                />
+            </column>
+        </createTable>
+        <createTable tableName="BPMN_PROCESS">
+            <column name="PROCESS_ID" type="varchar(100)">
+                <constraints primaryKey="true" primaryKeyName="PROCESS_ID_PK" />
+            </column>
+            <column name="NAME_RU" type="varchar(250)">
+                <constraints unique="true" uniqueConstraintName="PROCESS_NAME_RU_UNQ" />
+            </column>
+            <column name="NAME_EN" type="varchar(250)">
+                <constraints unique="true" uniqueConstraintName="PROCESS_NAME_EN_UNQ" />
+            </column>
+            <column name="NAME_UZ" type="varchar(250)">
+                <constraints unique="true" uniqueConstraintName="PROCESS_NAME_UZ_UNQ" />
+            </column>
+            <column name="STATE" type="state"/>
+            <column name="EXECUTABLE" type="boolean"/>
+            <column name="CATEGORY_ID" type="NUMBER">
+                <constraints foreignKeyName="CATEGORY_ID"
+                             referencedTableName="BPMN_PROCESS_CATEGORY"
+                             referencedColumnNames="CATEGORY_ID"
+                />
+            </column>
+        </createTable>
+    </changeSet>
+</databaseChangeLog>
