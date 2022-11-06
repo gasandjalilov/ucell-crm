@@ -4,10 +4,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.keycloak.admin.client.CreatedResponseUtil;
 import org.keycloak.admin.client.Keycloak;
-import org.keycloak.representations.idm.CredentialRepresentation;
-import org.keycloak.representations.idm.SocialLinkRepresentation;
 import org.keycloak.representations.idm.UserRepresentation;
-import org.springframework.data.jdbc.core.JdbcAggregateTemplate;
 import org.springframework.stereotype.Service;
 import uz.hayot.camunda.tasks.configuration.keycloak.KeycloakHelper;
 import uz.hayot.camunda.tasks.exception.UserActionException;
@@ -29,7 +26,6 @@ public class KeycloakServiceImpl implements KeycloakService {
     private final KeycloakHelper keycloakHelper;
     private final Keycloak keycloak;
     private final ClientTypeRepository clientTypeRepository;
-    private final JdbcAggregateTemplate jdbcTemplate;
 
 
     private final UserRepository userRepository;
@@ -73,7 +69,7 @@ public class KeycloakServiceImpl implements KeycloakService {
                 clientTypeRepository.findById(2L).ifPresent(user::setType);
             else clientTypeRepository.findById(1L).ifPresent(user::setType);
             log.debug("Create User: {}", user);
-            return jdbcTemplate.(user);
+            return userRepository.save(user);
         }
         catch (Exception e){
             e.printStackTrace();

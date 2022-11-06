@@ -7,7 +7,6 @@ import io.camunda.zeebe.spring.client.EnableZeebeClient;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.web.servlet.support.SpringBootServletInitializer;
-import org.springframework.data.jdbc.repository.config.EnableJdbcAuditing;
 
 @SpringBootApplication
 @EnableZeebeClient
@@ -16,7 +15,6 @@ import org.springframework.data.jdbc.repository.config.EnableJdbcAuditing;
 		name = "Hayot Bank CRM",
 		shortName = "CRM"
 )
-@EnableJdbcAuditing
 public class UserTasksApplication extends SpringBootServletInitializer implements AppShellConfigurator {
 
 	public static void main(String[] args) {

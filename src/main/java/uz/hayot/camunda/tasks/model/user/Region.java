@@ -1,30 +1,26 @@
 package uz.hayot.camunda.tasks.model.user;
 
-import lombok.Builder;
-import lombok.NonNull;
-import lombok.RequiredArgsConstructor;
-import lombok.Value;
-import org.springframework.data.annotation.Id;
-import org.springframework.data.relational.core.mapping.Column;
-import org.springframework.data.relational.core.mapping.Table;
-
-@Value(staticConstructor = "of")
-@RequiredArgsConstructor
-@NonNull
-@Builder
+import lombok.*;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.Table;
+@Data
+@Entity
 @Table(name = "region", schema = "camunda")
-public class Region {
+public class Region{
 
     @Id
-    @Column("region_id")
+    @Column(name = "region_id")
     String id;
 
-    @Column("name_ru")
+    @Column(name = "name_ru")
     String nameRu;
 
-    @Column("name_en")
+    @Column(name = "name_en")
     String nameEn;
 
-    @Column("name_uz")
+    @Column(name = "name_uz")
     String nameUz;
+
 }

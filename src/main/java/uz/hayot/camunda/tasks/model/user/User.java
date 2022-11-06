@@ -1,86 +1,113 @@
 package uz.hayot.camunda.tasks.model.user;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import lombok.*;
-import org.springframework.data.annotation.Id;
-import org.springframework.data.relational.core.mapping.Column;
-import org.springframework.data.relational.core.mapping.Table;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
+import org.springframework.format.annotation.DateTimeFormat;
 
-import java.io.Serializable;
+import javax.persistence.*;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Data
 @RequiredArgsConstructor
 @NonNull
 @AllArgsConstructor
+@Entity
 @Table(name = "user_data", schema = "camunda")
-public class User implements Serializable {
+public class User{
     @Id
-    @Column("user_id")
+    @Column(name = "user_id")
     UUID id;
 
-    @Column("firstname")
+    @Column(name = "firstname")
     String firstname;
 
-    @Column("lastname")
+    @Column(name = "lastname")
     String lastname;
 
-    @Column("patronymic")
+    @Column(name = "patronymic")
     String patronymic;
 
-    @Column("doc_id")
+    @JoinColumn(name = "doc_id",
+            referencedColumnName = "doc_id")
+    @ManyToOne(cascade = CascadeType.PERSIST)
     DocType docType;
 
-    @Column("doc_series")
+    @Column(name = "doc_series")
     String docSeries;
 
-    @Column("doc_number")
+    @Column(name = "doc_number")
     Long docNumber;
 
-    @Column("main_phone_number")
+    @Transient
     Long phoneMain;
 
-    @Column("additional_phone_number")
+    @Column(name = "additional_phone_number")
     Long phoneAdditional;
 
-    @Column("birth_date")
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
+    @Column(name = "birth_date")
     LocalDate birthDate;
 
-    @Column("inn")
+    @Column(name = "inn")
     Long inn;
 
-    @Column("pinfl")
+    @Column(name = "pinfl")
     Long pinfl;
 
-    @Column("sex_id")
+    @ManyToOne(cascade = CascadeType.PERSIST)
+    @JoinColumn(name = "sex_id",
+            referencedColumnName = "sex_id")
     SexType sex;
 
-    @Column("client_id")
+    @ManyToOne(cascade = CascadeType.PERSIST)
+    @JoinColumn(name = "client_id",
+            referencedColumnName = "client_id")
     ClientType type;
 
-    @Column("address")
+    @Column(name = "address")
     String address;
 
-    @Column("region_id")
+    @ManyToOne(cascade = CascadeType.PERSIST)
+    @JoinColumn(name = "region_id",
+            referencedColumnName = "region_id")
     Region region;
 
-    @Column("country_id")
+    @ManyToOne(cascade = CascadeType.PERSIST)
+    @JoinColumn(name = "country_id",
+            referencedColumnName = "country_id")
     Country country;
 
-    @Column("district_id")
+    @ManyToOne(cascade = CascadeType.PERSIST)
+    @JoinColumn(name = "district_id",
+            referencedColumnName = "district_id")
     District district;
 
-    @Column("date_issue")
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
+    @Column(name = "date_issue")
     LocalDate dateIssue;
 
-    @Column("date_expiry")
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
+    @Column(name = "date_expiry")
     LocalDate dateExpiry;
 
-    @Column("nationality")
+    @Column(name = "nationality")
     String nationality;
 
+    @Column(name = "created_on")
+    @CreationTimestamp
+    private LocalDateTime createdOn;
+
+    @Column(name = "created_by")
+    private UUID createdBy;
+
+    @Column(name = "updated_on")
+    @UpdateTimestamp
+    private LocalDateTime updatedOn;
+
+    @Column(name = "updated_by")
+    private UUID updatedBy;
 
 }

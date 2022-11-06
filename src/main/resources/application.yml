@@ -40,6 +40,10 @@ spring:
     password: WkLObd2TWrf923UzcB
     hikari:
       schema: camunda
+  jpa:
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
   liquibase:
     change-log: classpath:db/changelog/db.changelog-master.xml
   main:

@@ -9,11 +9,82 @@
 		http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd
 		http://www.liquibase.org/xml/ns/pro http://www.liquibase.org/xml/ns/pro/liquibase-pro-latest.xsd">
 
+    <property name="now" value="now()" dbms="postgresql"/>
+
+
+
     <changeSet id="202211061156" author="Gasan Djalilov">
-        <addColumn tableName="user_data">
+        <preConditions onFail="WARN">
+            <not>
+                <tableExists tableName="USER_DATA"/>
+            </not>
+        </preConditions>
+        <createTable tableName="USER_DATA">
+            <column name="USER_ID" type="UUID">
+                <constraints primaryKey="true" primaryKeyName="USER_ID"/>
+            </column>
+            <column name="FIRSTNAME" type="varchar(50)">
+            </column>
+            <column name="LASTNAME" type="varchar(50)">
+            </column>
+            <column name="PATRONYMIC" type="varchar(50)">
+            </column>
+            <column name="DOC_ID" type="BIGINT">
+                <constraints foreignKeyName="DOC_ID"
+                             referencedTableName="DOC_TYPE"
+                             referencedColumnNames="DOC_ID"
+                />
+            </column>
+            <column name="DOC_SERIES" type="varchar(8)">
+            </column>
+            <column name="DOC_NUMBER" type="NUMBER(30)">
+            </column>
+            <column name="ADDITIONAL_PHONE_NUMBER" type="NUMBER(15)">
+            </column>
+            <column name="BIRTH_DATE" type="DATE">
+            </column>
+            <column name="INN" type="NUMBER()"/>
+            <column name="SEX_ID" type="BIGINT">
+                <constraints foreignKeyName="SEX_ID"
+                             referencedTableName="SEX_TYPE"
+                             referencedColumnNames="SEX_ID"
+                />
+            </column>
+            <column name="CLIENT_ID" type="BIGINT">
+                <constraints foreignKeyName="CLIENT_ID"
+                             referencedTableName="CLIENT_TYPE"
+                             referencedColumnNames="CLIENT_ID"
+                />
+            </column>
+            <column name="ADDRESS" type="VARCHAR(250)"/>
+            <column name="REGION_ID" type="varchar(10)">
+                <constraints foreignKeyName="REGION_ID"
+                             referencedTableName="REGION"
+                             referencedColumnNames="REGION_ID"
+                />
+            </column>
+            <column name="COUNTRY_ID" type="varchar(10)">
+                <constraints foreignKeyName="COUNTRY_ID"
+                             referencedTableName="COUNTRY"
+                             referencedColumnNames="COUNTRY_ID"
+                />
+            </column>
+            <column name="DISTRICT_ID" type="varchar(10)">
+                <constraints foreignKeyName="DISTRICT_ID"
+                             referencedTableName="DISTRICT"
+                             referencedColumnNames="DISTRICT_ID"
+                />
+            </column>
+            <column name="DATE_ISSUE" type="DATE"/>
+            <column name="DATE_EXPIRY" type="DATE"/>
+            <column name="NATIONALITY" type="VARCHAR(250)"/>
             <column name="PINFL" type="NUMBER(20)" >
                 <constraints nullable="false"/>
             </column>
-        </addColumn>
+            <column name="CREATED_ON" type="timestamp"/>
+            <column name="CREATED_BY" type="UUID"/>
+            <column name="UPDATED_ON" type="timestamp"/>
+            <column name="UPDATED_BY" type="UUID"/>
+        </createTable>
     </changeSet>
 </databaseChangeLog>

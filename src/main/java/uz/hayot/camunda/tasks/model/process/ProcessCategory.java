@@ -1,38 +1,31 @@
 package uz.hayot.camunda.tasks.model.process;
 
-import lombok.Builder;
-import lombok.NonNull;
-import lombok.RequiredArgsConstructor;
-import lombok.Value;
-import org.springframework.data.annotation.Id;
-import org.springframework.data.relational.core.mapping.Column;
-import org.springframework.data.relational.core.mapping.MappedCollection;
-import org.springframework.data.relational.core.mapping.Table;
 
+import lombok.*;
+
+import javax.persistence.*;
 import java.io.Serializable;
 import java.util.Set;
 
-@Value(staticConstructor = "of")
-@RequiredArgsConstructor
-@NonNull
-@Builder
+@Data
+@Entity
 @Table(name = "bpmn_process_category", schema = "camunda")
 public class ProcessCategory implements Serializable {
 
     @Id
-    @Column("category_id")
+    @Column(name = "category_id")
     Long id;
 
-    @Column("name_ru")
+    @Column(name = "name_ru")
     String nameRu;
 
-    @Column("name_en")
+    @Column(name = "name_en")
     String nameEn;
 
-    @Column("name_uz")
+    @Column(name = "name_uz")
     String nameUz;
 
-    @MappedCollection(keyColumn = "category_id", idColumn = "category_id")
-    final Set<Process> processes;
+    @OneToMany(targetEntity = Process.class)
+    Set<Process> processes;
 
 }

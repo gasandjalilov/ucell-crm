@@ -1,36 +1,32 @@
 package uz.hayot.camunda.tasks.model.process;
 
-import lombok.Builder;
-import lombok.NonNull;
-import lombok.RequiredArgsConstructor;
-import lombok.Value;
-import org.springframework.data.annotation.Id;
-import org.springframework.data.relational.core.mapping.Column;
-import org.springframework.data.relational.core.mapping.Table;
+import lombok.*;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.Table;
 
-@Value(staticConstructor = "of")
-@RequiredArgsConstructor
-@NonNull
-@Builder
+@Data
+@Entity
 @Table(name = "bpmn_process", schema = "camunda")
 public class Process {
 
     @Id
-    @Column("process_id")
+    @Column(name = "process_id")
     String processId;
 
-    @Column("name_ru")
+    @Column(name = "name_ru")
     String nameRu;
 
-    @Column("name_en")
+    @Column(name = "name_en")
     String nameEn;
 
-    @Column("name_uz")
+    @Column(name = "name_uz")
     String nameUz;
 
-    @Column("state")
+    @Column(name = "state")
     State state;
 
-    @Column("executable")
+    @Column(name = "executable")
     Boolean executable;
 }
