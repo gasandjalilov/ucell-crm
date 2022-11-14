@@ -55,3 +55,4 @@ server:
 bpm:
   client:
     nibbd: HB_Nibbd
+    nci: createnciclient

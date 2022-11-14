@@ -6,15 +6,18 @@ import uz.hayot.camunda.tasks.model.user.User;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 @Service
 public interface KeycloakService {
 
-    Optional<UserRepresentation> findUserByUsername(String username);
+    List<UserRepresentation> findUserByUsername(String username);
 
     List<UserRepresentation> findAll();
 
     Optional<UserRepresentation> findByAttribute();
 
     User createUser(User user);
+
+    void deleteUser(String username);
 }

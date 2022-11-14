@@ -21,7 +21,7 @@ public class NibbdRequest implements Serializable {
 
     private String birthDate;
 
-    private Long documentNumber;
+    private String documentNumber;
 
     private String documentSeries;
 

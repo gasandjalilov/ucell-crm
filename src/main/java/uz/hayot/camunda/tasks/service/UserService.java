@@ -1,5 +1,9 @@
 package uz.hayot.camunda.tasks.service;
 
+import com.vaadin.flow.component.UI;
+import com.vaadin.flow.component.confirmdialog.ConfirmDialog;
+import com.vaadin.flow.component.dialog.Dialog;
+import com.vaadin.flow.component.notification.Notification;
 import org.mapstruct.MappingTarget;
 import org.springframework.stereotype.Service;
 import uz.hayot.camunda.tasks.dto.camunda.NibbdResponse;
@@ -16,6 +20,9 @@ public interface UserService {
 
     User add(User user);
 
+    User add(User user, UI ui, Dialog notification);
+
+    List<User> find(String username);
     User update(User user);
 
     User disable(UUID id);
@@ -39,6 +46,10 @@ public interface UserService {
     List<DocType> docTypes();
 
     Optional<DocType> docType(Long id);
+
+    List<Nationality> nationalityTypes();
+
+    Optional<Nationality> nationalityType(String id);
 
     User update(NibbdResponse response, User user);
 

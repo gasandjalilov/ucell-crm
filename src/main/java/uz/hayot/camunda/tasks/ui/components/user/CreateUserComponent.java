@@ -4,9 +4,14 @@ import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.combobox.ComboBox;
+import com.vaadin.flow.component.confirmdialog.ConfirmDialog;
 import com.vaadin.flow.component.datepicker.DatePicker;
+import com.vaadin.flow.component.dialog.Dialog;
 import com.vaadin.flow.component.formlayout.FormLayout;
+import com.vaadin.flow.component.html.Span;
+import com.vaadin.flow.component.icon.Icon;
 import com.vaadin.flow.component.notification.Notification;
+import com.vaadin.flow.component.notification.NotificationVariant;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.progressbar.ProgressBar;
 import com.vaadin.flow.component.textfield.NumberField;
@@ -34,8 +39,10 @@ import uz.hayot.camunda.tasks.ui.MainUserInterface;
 import uz.hayot.camunda.tasks.ui.helper.TranslationProvider;
 
 import javax.annotation.security.PermitAll;
+import java.awt.*;
 import java.time.Duration;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.UUID;
 
 @PermitAll
@@ -46,7 +53,7 @@ import java.util.UUID;
 @PageTitle("Создать Пользователя")
 public class CreateUserComponent extends VerticalLayout implements LocaleChangeObserver {
 
-    private static final String NUMBER_PATTERN="[\\d\\-+()]";
+    private static final String NUMBER_PATTERN = "[\\d\\-+()]";
     private final UserService userService;
     private final ZeebeClient zeebeClient;
     private final String nibbd;
@@ -66,6 +73,8 @@ public class CreateUserComponent extends VerticalLayout implements LocaleChangeO
     DatePicker birthDate = new DatePicker();
 
     TextField inn = new TextField();
+    TextField givenPlace = new TextField();
+
     TextField pinfl = new TextField();
     ComboBox<SexType> sex = new ComboBox<>();
     TextField address = new TextField();
@@ -74,13 +83,13 @@ public class CreateUserComponent extends VerticalLayout implements LocaleChangeO
     ComboBox<District> district = new ComboBox<>();
     DatePicker dateIssue = new DatePicker();
     DatePicker dateExpiry = new DatePicker();
-    TextField nationality = new TextField();
+    ComboBox<Nationality> nationality = new ComboBox<>();
 
     ProgressBar progressBar = new ProgressBar();
 
     Binder<User> binder = new Binder<>(User.class);
     User user = new User();
-
+    Span userCreated = new Span();
     UI ui = UI.getCurrent();
     FormLayout formLayout = new FormLayout();
     FormLayout hiddenForm = new FormLayout();
@@ -95,6 +104,7 @@ public class CreateUserComponent extends VerticalLayout implements LocaleChangeO
         this.securityService = securityService;
         progressBar.setVisible(false);
         progressBar.setIndeterminate(true);
+        progressBar.setId("main_progress_bar");
         this.add(progressBar);
         formLayout.setWidthFull();
         hiddenForm.setWidthFull();
@@ -108,9 +118,11 @@ public class CreateUserComponent extends VerticalLayout implements LocaleChangeO
         district.setItems(userService.districts());
         district.setItemLabelGenerator(District::getNameRu);
         country.setItems(userService.countries());
+        country.setItemLabelGenerator(Country::getNameRu);
         sex.setItems(userService.sexTypes());
         sex.setItemLabelGenerator(SexType::getNameRu);
-        country.setItemLabelGenerator(Country::getNameRu);
+        nationality.setItems(userService.nationalityTypes());
+        nationality.setItemLabelGenerator(Nationality::getNameRu);
 
         inn.setAllowedCharPattern(NUMBER_PATTERN);
         pinfl.setAllowedCharPattern(NUMBER_PATTERN);
@@ -153,37 +165,39 @@ public class CreateUserComponent extends VerticalLayout implements LocaleChangeO
                 country,
                 district,
                 nationality,
+                givenPlace,
                 dateIssue,
                 dateExpiry,
                 validate);
         formLayout.setColspan(validate, 2);
         check.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
         validate.addThemeVariants(ButtonVariant.LUMO_SUCCESS);
-        this.add(formLayout,hiddenForm);
+        this.add(formLayout, hiddenForm);
         binder();
     }
 
 
     public void binder() {
-        binder.forField(firstname).asRequired().bind(User::getFirstname, User::setFirstname);
-        binder.forField(lastname).bind(User::getLastname, User::setLastname);
-        binder.forField(patronymic).bind(User::getPatronymic, User::setPatronymic);
+        binder.forField(firstname).asRequired().bind(User::getFirstname, (user1, s) -> user1.setFirstname(s.toUpperCase()));
+        binder.forField(lastname).bind(User::getLastname , (user1, s) -> user1.setLastname(s.toUpperCase()));
+        binder.forField(patronymic).bind(User::getPatronymic , (user1, s) -> user1.setPatronymic(s.toUpperCase()));
         binder.forField(docTypeComboBox).bind(User::getDocType, User::setDocType);
         binder.forField(docSeries).bind(User::getDocSeries, User::setDocSeries);
-        binder.forField(docNumber).bind(user1 -> Objects.toString(user1.getDocNumber(),""),(user1, s) -> user1.setDocNumber(Long.valueOf(s)));
-        binder.forField(phoneMain).asRequired().bind(user1 -> Objects.toString(user1.getPhoneMain(),""),(user1, s) -> user1.setPhoneMain(Long.valueOf(s)));
-        binder.forField(phoneAdditional).bind(user1 -> Objects.toString(user1.getPhoneAdditional(),""),(user1, s) -> user1.setPhoneAdditional(Long.valueOf(s)));
+        binder.forField(docNumber).bind(User::getDocNumber, User::setDocNumber);
+        binder.forField(phoneMain).asRequired().bind(User::getPhoneMain, User::setPhoneMain);
+        binder.forField(phoneAdditional).bind(User::getPhoneAdditional, User::setPhoneAdditional);
         binder.forField(birthDate).asRequired().bind(User::getBirthDate, User::setBirthDate);
-        binder.forField(inn).bind(user1 -> Objects.toString(user1.getInn(), ""),(user1, s) -> user1.setInn(Long.valueOf(s)));
-        binder.forField(pinfl).bind(user1 -> Objects.toString(user1.getPinfl(),""),(user1, s) -> user1.setPinfl(Long.valueOf(s)));
-        binder.forField(region).bind(User::getRegion,User::setRegion);
-        binder.forField(district).bind(User::getDistrict,User::setDistrict);
-        binder.forField(country).bind(User::getCountry,User::setCountry);
-        binder.forField(dateIssue).bind(User::getDateIssue,User::setDateIssue);
-        binder.forField(dateExpiry).bind(User::getDateExpiry,User::setDateExpiry);
-        binder.forField(sex).bind(User::getSex,User::setSex);
-        binder.forField(address).bind(User::getAddress,User::setAddress);
-        binder.forField(nationality).bind(User::getNationality,User::setNationality);
+        binder.forField(inn).bind(User::getInn, User::setInn);
+        binder.forField(pinfl).bind(User::getPinfl, User::setPinfl);
+        binder.forField(region).bind(User::getRegion, User::setRegion);
+        binder.forField(district).bind(User::getDistrict, User::setDistrict);
+        binder.forField(country).bind(User::getCountry, User::setCountry);
+        binder.forField(dateIssue).bind(User::getDateIssue, User::setDateIssue);
+        binder.forField(dateExpiry).bind(User::getDateExpiry, User::setDateExpiry);
+        binder.forField(sex).bind(User::getSex, User::setSex);
+        binder.forField(address).bind(User::getAddress, User::setAddress);
+        binder.forField(nationality).bind(User::getNationality, User::setNationality);
+        binder.forField(givenPlace).bind(User::getRegistrationPlace, User::setRegistrationPlace);
     }
 
 
@@ -209,14 +223,17 @@ public class CreateUserComponent extends VerticalLayout implements LocaleChangeO
                                 ui.push();
                             });
 
-                        } else if (throwable instanceof StatusRuntimeException) {
-                            final StatusRuntimeException statusException = (StatusRuntimeException) throwable;
+                        } else if (throwable instanceof final StatusRuntimeException statusException) {
                             final Status.Code code = statusException.getStatus().getCode();
                             log.error("Caught: {}", code);
                             ui.access(() -> {
                                 hiddenForm.setVisible(true);
                                 progressBar.setVisible(false);
-                                Notification.show("Error").open();
+                                Notification notification = Notification
+                                        .show(String.format("Error: %s", throwable.getMessage()));
+                                notification.addThemeVariants(NotificationVariant.LUMO_ERROR);
+                                notification.setPosition(Notification.Position.MIDDLE);
+                                notification.open();
                             });
 
                         }
@@ -229,8 +246,38 @@ public class CreateUserComponent extends VerticalLayout implements LocaleChangeO
     }
 
 
-    public void addUser(){
-        userService.add(binder.getBean());
+    public void addUser() {
+        try {
+            userService.add(binder.getBean(), ui, notificationCreate(""));
+
+        } catch (Exception e) {
+            ui.access(() -> {
+                Notification notification = Notification
+                        .show(String.format("Error: %s", e.getMessage()));
+                notification.addThemeVariants(NotificationVariant.LUMO_ERROR);
+                notification.setPosition(Notification.Position.MIDDLE);
+                notification.open();
+
+            });
+        }
+//        try {
+//            userService.add(binder.getBean());
+//            Notification.show(userCreated.getText()).open();
+//        }
+//        catch (Exception exception){
+//            Notification notification = new Notification();
+//            notification.add(new Span(exception.getMessage()));
+//            notification.addThemeVariants(NotificationVariant.LUMO_ERROR);
+//            notification.open();
+//        }
+    }
+
+    public Dialog notificationCreate(String text) {
+        Dialog notification = new Dialog();
+        notification.setHeaderTitle(text);
+        notification.setCloseOnEsc(false);
+        notification.setCloseOnOutsideClick(false);
+        return notification;
     }
 
     @Override
@@ -256,5 +303,7 @@ public class CreateUserComponent extends VerticalLayout implements LocaleChangeO
         dateIssue.setLabel(getTranslation("user.create.date.issue"));
         dateExpiry.setLabel(getTranslation("user.create.date.expiry"));
         check.setText(getTranslation("user.create.check"));
+        userCreated.setText(getTranslation("user.create.success"));
+        givenPlace.setLabel(getTranslation("user.create.givenplace"));
     }
 }

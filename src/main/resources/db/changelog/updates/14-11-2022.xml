@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
+        xmlns:pro="http://www.liquibase.org/xml/ns/pro"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.3.xsd
+		http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd
+		http://www.liquibase.org/xml/ns/pro http://www.liquibase.org/xml/ns/pro/liquibase-pro-latest.xsd">
+
+    <property name="now" value="now()" dbms="postgresql"/>
+
+    <changeSet id="202211141903" author="Gasan Djalilov">
+        <createTable tableName="USER_ACCOUNT">
+            <column name="ACCOUNT_ID" type="varchar(20)">
+                <constraints primaryKey="true" primaryKeyName="ACCOUNT_ID"/>
+            </column>
+            <column name="USER_ID" type="UUID">
+                <constraints foreignKeyName="USER_ID"
+                             referencedTableName="USER_DATA"
+                             referencedColumnNames="USER_ID"
+                />
+            </column>
+
+
+        </createTable>
+    </changeSet>
+
+
+</databaseChangeLog>

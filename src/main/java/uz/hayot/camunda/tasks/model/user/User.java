@@ -1,9 +1,11 @@
 package uz.hayot.camunda.tasks.model.user;
 
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 import org.springframework.format.annotation.DateTimeFormat;
+import uz.hayot.camunda.tasks.dto.serializer.NumericBooleanSerializer;
 
 import javax.persistence.*;
 import java.time.LocalDate;
@@ -39,23 +41,23 @@ public class User{
     String docSeries;
 
     @Column(name = "doc_number")
-    Long docNumber;
+    String docNumber;
 
     @Transient
-    Long phoneMain;
+    String phoneMain;
 
     @Column(name = "additional_phone_number")
-    Long phoneAdditional;
+    String phoneAdditional;
 
     @DateTimeFormat(pattern = "yyyy-MM-dd")
     @Column(name = "birth_date")
     LocalDate birthDate;
 
     @Column(name = "inn")
-    Long inn;
+    String inn;
 
     @Column(name = "pinfl")
-    Long pinfl;
+    String pinfl;
 
     @ManyToOne(cascade = CascadeType.PERSIST)
     @JoinColumn(name = "sex_id",
@@ -93,21 +95,35 @@ public class User{
     @Column(name = "date_expiry")
     LocalDate dateExpiry;
 
-    @Column(name = "nationality")
-    String nationality;
+    @ManyToOne(cascade = CascadeType.PERSIST)
+    @JoinColumn(name = "nationality_id",
+            referencedColumnName = "nationality_id")
+    Nationality nationality;
+
+    @Column(name = "nci_id")
+    String nciId;
+
+    @Column(name = "birth_place")
+    String birthPlace;
+
+    @Column(name = "registration_place")
+    String registrationPlace;
 
     @Column(name = "created_on")
     @CreationTimestamp
-    private LocalDateTime createdOn;
+    LocalDateTime createdOn;
 
     @Column(name = "created_by")
-    private UUID createdBy;
+    UUID createdBy;
 
     @Column(name = "updated_on")
     @UpdateTimestamp
-    private LocalDateTime updatedOn;
+    LocalDateTime updatedOn;
 
     @Column(name = "updated_by")
-    private UUID updatedBy;
+    UUID updatedBy;
 
+    @Column(name = "resident")
+    @JsonSerialize(using = NumericBooleanSerializer.class)
+    Boolean resident=true;
 }

@@ -21,7 +21,7 @@ public class NibbdResponse implements Serializable {
     @JsonProperty("sex")
     Integer sex;
     @JsonProperty("pinfl")
-    Long pinfl;
+    String pinfl;
     @JsonProperty("region")
     String region;
     @JsonProperty("userId")
@@ -57,7 +57,9 @@ public class NibbdResponse implements Serializable {
     @JsonProperty("nationality")
     String nationality;
     @JsonProperty("documentNumber")
-    Integer documentNumber;
+    String documentNumber;
     @JsonProperty("documentSeries")
     String documentSeries;
+    @JsonProperty("birth_place")
+    String birthPlace;
 }

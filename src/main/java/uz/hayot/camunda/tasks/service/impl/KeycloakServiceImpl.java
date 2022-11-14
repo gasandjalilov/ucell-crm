@@ -7,14 +7,17 @@ import org.keycloak.admin.client.Keycloak;
 import org.keycloak.representations.idm.UserRepresentation;
 import org.springframework.stereotype.Service;
 import uz.hayot.camunda.tasks.configuration.keycloak.KeycloakHelper;
+import uz.hayot.camunda.tasks.configuration.keycloak.SecurityService;
 import uz.hayot.camunda.tasks.exception.UserActionException;
 import uz.hayot.camunda.tasks.model.user.User;
+import uz.hayot.camunda.tasks.model.user.UserMapper;
 import uz.hayot.camunda.tasks.repository.ClientTypeRepository;
 import uz.hayot.camunda.tasks.repository.UserRepository;
 import uz.hayot.camunda.tasks.service.KeycloakService;
 
 import javax.ws.rs.core.Response;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -27,15 +30,16 @@ public class KeycloakServiceImpl implements KeycloakService {
     private final Keycloak keycloak;
     private final ClientTypeRepository clientTypeRepository;
 
+    private final SecurityService securityService;
 
+    private final UserMapper userMapper;
     private final UserRepository userRepository;
 
     @Override
-    public Optional<UserRepresentation> findUserByUsername(String username) {
-        return Optional.ofNullable(keycloak.realm(keycloakHelper.realm())
+    public List<UserRepresentation> findUserByUsername(String username) {
+        return keycloak.realm(keycloakHelper.realm())
                 .users()
-                .get(username)
-                .toRepresentation());
+                .search(username);
     }
 
     @Override
@@ -57,30 +61,30 @@ public class KeycloakServiceImpl implements KeycloakService {
         userRepresentation.setFirstName(user.getFirstname());
         userRepresentation.setEnabled(false);
         userRepresentation.setUsername(user.getPhoneMain().toString());
-        try {
-            Response response = keycloak.realm(keycloakHelper.realm())
-                    .users()
-                    .create(userRepresentation);
-            if (response.getStatus() != 201)
-                throw new UserActionException("Ошибка при создании клиента на стороне сервиса авторизации");
-            String userId = CreatedResponseUtil.getCreatedId(response);
-            user.setId(UUID.fromString(userId));
-            if (user.getDocNumber() > 0 && user.getDocSeries().length() > 1)
-                clientTypeRepository.findById(2L).ifPresent(user::setType);
-            else clientTypeRepository.findById(1L).ifPresent(user::setType);
-            log.debug("Create User: {}", user);
-            return userRepository.save(user);
-        }
-        catch (Exception e){
-            e.printStackTrace();
-            log.error("Caught Exception Creating User: {}, ERROR:{}", user, e.getMessage());
-            throw new UserActionException(String.format("Пользователь не создан, ошибка: %s", e.getMessage()));
-        }
+        Response response = keycloak.realm(keycloakHelper.realm())
+                .users()
+                .create(userRepresentation);
+        if(response.getStatus() == 409)
+            throw new UserActionException("Ошибка при создании клиента,данный номер уже зарегистрирован ранее");
+        if (response.getStatus() != 201)
+            throw new UserActionException("Ошибка при создании клиента на стороне сервиса авторизации");
+        String userId = CreatedResponseUtil.getCreatedId(response);
+        user.setId(UUID.fromString(userId));
+        if (user.getDocNumber().length()>0 && user.getDocSeries().length() > 1)
+            clientTypeRepository.findById(2L).ifPresent(user::setType);
+        else clientTypeRepository.findById(1L).ifPresent(user::setType);
+        log.debug("Create User: {}", user);
+        user.setCreatedBy(UUID.fromString(Objects.requireNonNull(securityService.getAuthenticatedUser().getAttribute("sub"))));
+        return user;
     }
 
-
-    public void create() {
+    @Override
+    public void deleteUser(String id) {
+        Response response = keycloak.realm(keycloakHelper.realm())
+                .users()
+                .delete(id);
 
     }
+
 
 }

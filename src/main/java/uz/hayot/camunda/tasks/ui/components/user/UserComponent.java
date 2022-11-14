@@ -1,10 +1,11 @@
 package uz.hayot.camunda.tasks.ui.components.user;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.Unit;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
+import com.vaadin.flow.component.crud.Crud;
+import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.icon.Icon;
 import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
@@ -14,21 +15,15 @@ import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.spring.annotation.UIScope;
 import io.camunda.zeebe.client.ZeebeClient;
-import io.camunda.zeebe.client.api.ZeebeFuture;
-import io.camunda.zeebe.client.api.command.CreateProcessInstanceCommandStep1;
-import io.camunda.zeebe.client.api.response.ProcessInstanceEvent;
-import io.camunda.zeebe.client.api.response.ProcessInstanceResult;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
-import uz.hayot.camunda.tasks.service.KeycloakService;
+import uz.hayot.camunda.tasks.model.user.User;
+import uz.hayot.camunda.tasks.service.UserService;
 import uz.hayot.camunda.tasks.ui.MainUserInterface;
 
 import javax.annotation.security.PermitAll;
 import java.time.Duration;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.concurrent.CompletableFuture;
 
 @PermitAll
 @Route(value = "users", layout = MainUserInterface.class)
@@ -38,25 +33,30 @@ import java.util.concurrent.CompletableFuture;
 @PageTitle("Пользователи")
 public class UserComponent extends VerticalLayout {
 
-    private final KeycloakService keycloakService;
-    private final String nibbd;
-    private final ZeebeClient zeebeClient;
+    private final UserService userService;
+    private final UI ui = UI.getCurrent();
+    Grid<User> userCrud = new Grid<>(User.class,false);
 
-    final ObjectMapper mapper = new ObjectMapper();
 
-    public UserComponent(KeycloakService keycloakService,
-                         ZeebeClient zeebeClient,
-                         @Value("${bpm.client.nibbd}") String nibbd) {
-        this.keycloakService = keycloakService;
-        this.zeebeClient = zeebeClient;
-        this.nibbd=nibbd;
+    public UserComponent(
+            UserService userService) {
+        this.userService = userService;
         add(upperSearchElement());
+        userCrud.addColumn(User::getId).setHeader("User ID");
+        userCrud.addColumn(User::getLastname).setHeader("Lastname");
+        userCrud.addColumn(User::getFirstname).setHeader("Firstname");
+        userCrud.addColumn(User::getNciId).setHeader("NCI ID");
+        userCrud.addColumn(User::getDocSeries).setHeader("Document Series");
+        userCrud.addColumn(User::getDocNumber).setHeader("Document Number");
+        add(userCrud);
     }
 
 
     public HorizontalLayout upperSearchElement(){
         HorizontalLayout horizontalLayout = new HorizontalLayout();
         horizontalLayout.setWidthFull();
+
+
         TextField textField = new TextField();
         textField.setPlaceholder("Поиск по номеру телефона, пример (99893*******)");
         textField.setPrefixComponent(VaadinIcon.SEARCH.create());
@@ -65,7 +65,7 @@ public class UserComponent extends VerticalLayout {
         search.addThemeVariants(ButtonVariant.LUMO_SUCCESS);
         search.setWidth(15,Unit.PERCENTAGE);
         search.addClickListener(buttonClickEvent -> {
-            createTask();
+                ui.access(() -> userCrud.setItems(userService.find(textField.getValue())));
         });
         Button addUser = new Button("Создать Пользователя", new Icon(VaadinIcon.USER));
         addUser.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
@@ -75,20 +75,7 @@ public class UserComponent extends VerticalLayout {
         return horizontalLayout;
     }
 
-    public void createTask(){
-        zeebeClient.newCreateInstanceCommand()
-                .bpmnProcessId(nibbd)
-                .latestVersion()
-                .withResult()
-                .requestTimeout(Duration.ofMinutes(5))
-                .send()
-                .whenCompleteAsync((processInstanceResult, throwable) -> {
-                    log.info("Variables: {}", processInstanceResult.getVariables());
-                });
 
-
-
-    }
 
 
 

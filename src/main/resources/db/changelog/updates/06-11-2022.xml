@@ -11,7 +11,22 @@
 
     <property name="now" value="now()" dbms="postgresql"/>
 
-
+    <changeSet id="202211091503" author="Gasan Djalilov">
+        <createTable tableName="NATIONALITY_TYPE">
+            <column name="NATIONALITY_ID" type="varchar(10)">
+                <constraints primaryKey="true" primaryKeyName="NAT_TYPE_ID"/>
+            </column>
+            <column name="NAME_RU" type="varchar(250)">
+                <constraints unique="true" uniqueConstraintName="NAT_TYPE_NAME_RU_UNQ"/>
+            </column>
+            <column name="NAME_EN" type="varchar(250)">
+                <constraints unique="true" uniqueConstraintName="NAT_TYPE_NAME_EN_UNQ"/>
+            </column>
+            <column name="NAME_UZ" type="varchar(250)">
+                <constraints unique="true" uniqueConstraintName="NAT_TYPE_NAME_UZ_UNQ"/>
+            </column>
+        </createTable>
+    </changeSet>
 
     <changeSet id="202211061156" author="Gasan Djalilov">
         <preConditions onFail="WARN">
@@ -37,13 +52,13 @@
             </column>
             <column name="DOC_SERIES" type="varchar(8)">
             </column>
-            <column name="DOC_NUMBER" type="NUMBER(30)">
+            <column name="DOC_NUMBER" type="varchar(30)">
             </column>
-            <column name="ADDITIONAL_PHONE_NUMBER" type="NUMBER(15)">
+            <column name="ADDITIONAL_PHONE_NUMBER" type="varchar(15)">
             </column>
             <column name="BIRTH_DATE" type="DATE">
             </column>
-            <column name="INN" type="NUMBER()"/>
+            <column name="INN" type="VARCHAR(20)"/>
             <column name="SEX_ID" type="BIGINT">
                 <constraints foreignKeyName="SEX_ID"
                              referencedTableName="SEX_TYPE"
@@ -69,6 +84,12 @@
                              referencedColumnNames="COUNTRY_ID"
                 />
             </column>
+            <column name="NATIONALITY_ID" type="varchar(10)">
+                <constraints foreignKeyName="NATIONALITY_ID"
+                             referencedTableName="NATIONALITY_TYPE"
+                             referencedColumnNames="NATIONALITY_ID"
+                />
+            </column>
             <column name="DISTRICT_ID" type="varchar(10)">
                 <constraints foreignKeyName="DISTRICT_ID"
                              referencedTableName="DISTRICT"
@@ -78,13 +99,19 @@
             <column name="DATE_ISSUE" type="DATE"/>
             <column name="DATE_EXPIRY" type="DATE"/>
             <column name="NATIONALITY" type="VARCHAR(250)"/>
-            <column name="PINFL" type="NUMBER(20)" >
+            <column name="PINFL" type="VARCHAR(20)" >
                 <constraints nullable="false"/>
             </column>
+            <column name="REGISTRATION_PLACE" type="varchar"/>
+            <column name="BIRTH_PLACE" type="varchar"/>
+            <column name="NCI_ID" type="varchar"/>
+            <column name="RESIDENT" type="BOOL"/>
             <column name="CREATED_ON" type="timestamp"/>
             <column name="CREATED_BY" type="UUID"/>
             <column name="UPDATED_ON" type="timestamp"/>
             <column name="UPDATED_BY" type="UUID"/>
         </createTable>
     </changeSet>
+
+
 </databaseChangeLog>
