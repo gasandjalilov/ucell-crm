@@ -11,6 +11,23 @@
 
     <property name="now" value="now()" dbms="postgresql"/>
 
+    <changeSet id="202211091503" author="Gasan Djalilov">
+        <createTable tableName="ACCOUNT_STATUS">
+            <column name="STATUS_ID" type="varchar(10)">
+                <constraints primaryKey="true" primaryKeyName="ACC_STATE_ID"/>
+            </column>
+            <column name="NAME_RU" type="varchar(250)">
+                <constraints unique="true" uniqueConstraintName="ACC_STATE_NAME_RU_UNQ"/>
+            </column>
+            <column name="NAME_EN" type="varchar(250)">
+                <constraints unique="true" uniqueConstraintName="ACC_STATE_NAME_EN_UNQ"/>
+            </column>
+            <column name="NAME_UZ" type="varchar(250)">
+                <constraints unique="true" uniqueConstraintName="ACC_STATE_NAME_UZ_UNQ"/>
+            </column>
+        </createTable>
+    </changeSet>
+
     <changeSet id="202211141903" author="Gasan Djalilov">
         <createTable tableName="USER_ACCOUNT">
             <column name="ACCOUNT_ID" type="varchar(20)">
@@ -22,8 +39,18 @@
                              referencedColumnNames="USER_ID"
                 />
             </column>
-
-
+            <column name="USER_ID" type="UUID">
+                <constraints foreignKeyName="USER_ID"
+                             referencedTableName="USER_DATA"
+                             referencedColumnNames="USER_ID"
+                />
+            </column>
+            <column name="STATUS_ID" type="UUID">
+                <constraints foreignKeyName="STATUS_ID"
+                             referencedTableName="ACCOUNT_STATUS"
+                             referencedColumnNames="STATUS_ID"
+                />
+            </column>
         </createTable>
     </changeSet>
 
